@@ -1,11 +1,14 @@
 package com.example.yportfolio.ui.screens
 
+import com.example.yportfolio.model.Note
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack  // Import standard
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -16,25 +19,40 @@ import com.example.yportfolio.viewmodel.NoteViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NoteDetailScreen(noteId: String?, viewModel: NoteViewModel, onBack: () -> Unit) {
-    val note = remember { noteId?.let { viewModel.getNoteById(it) } }
-    var title by remember { mutableStateOf(note?.title ?: "") }
-    var content by remember { mutableStateOf(note?.content ?: "") }
+fun NoteDetailScreen(noteId: Int?, viewModel: NoteViewModel, onBack: () -> Unit) {
+    // On utilise LaunchedEffect pour charger la note depuis la DB quand l'écran s'ouvre
+    var title by remember { mutableStateOf("") }
+    var content by remember { mutableStateOf("") }
+    var existingNote by remember { mutableStateOf<Note?>(null) }
 
+    LaunchedEffect(noteId) {
+        if (noteId != null) {
+            val note = viewModel.getNoteById(noteId)
+            if (note != null) {
+                existingNote = note
+                title = note.title
+                content = note.content
+            }
+        }
+    }
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(if (noteId == null) "Nouvelle note" else "Modifier") },
                 navigationIcon = {
                     IconButton(onClick = {
-                        if (title.isNotEmpty() || content.isNotEmpty()) {
-                            if (noteId == null) viewModel.addNote(title, content)
-                            else viewModel.updateNote(note!!.copy(title = title, content = content))
+                        if (title.isNotBlank() || content.isNotBlank()) {
+                            if (noteId == null) {
+                                viewModel.addNote(title, content)
+                            } else {
+                                existingNote?.let {
+                                    viewModel.updateNote(it.copy(title = title, content = content))
+                                }
+                            }
                         }
                         onBack()
                     }) {
-                        // Utilisation de l'icône standard sans AutoMirrored pour éviter les conflits
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Retour")
+                        Icon(Icons.Default.ArrowBack, "Retour")
                     }
                 },
                 actions = {

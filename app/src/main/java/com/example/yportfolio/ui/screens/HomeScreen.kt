@@ -28,7 +28,7 @@ import com.example.yportfolio.viewmodel.NoteViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: NoteViewModel, onNoteClick: (String) -> Unit, onAddNoteClick: () -> Unit) {
+fun HomeScreen(viewModel: NoteViewModel, onNoteClick: (Int) -> Unit, onAddNoteClick: () -> Unit) {
     val notes by viewModel.notes.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery
     val filteredNotes = notes.filter {
