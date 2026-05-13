@@ -15,6 +15,15 @@ class NoteViewModel : ViewModel() {
     private val _searchQuery = mutableStateOf("")
     val searchQuery: State<String> = _searchQuery
 
+    val colors = listOf(
+        0xFFFFFFFF, // Blanc
+        0xFFF8BBD0, // Rose pâle
+        0xFFE1BEE7, // Violet clair
+        0xFFB3E5FC, // Bleu ciel
+        0xFFC8E6C9, // Vert menthe
+        0xFFFFF9C4  // Jaune crème
+    )
+
     init {
         // Données de démonstration
         _notes.value = listOf(

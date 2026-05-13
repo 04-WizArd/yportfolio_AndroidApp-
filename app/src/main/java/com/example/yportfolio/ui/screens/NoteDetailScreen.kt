@@ -8,7 +8,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.yportfolio.viewmodel.NoteViewModel
 
 
@@ -57,24 +59,23 @@ fun NoteDetailScreen(noteId: String?, viewModel: NoteViewModel, onBack: () -> Un
             TextField(
                 value = title,
                 onValueChange = { title = it },
-                placeholder = { Text("Titre", style = MaterialTheme.typography.headlineSmall) },
+                placeholder = { Text("Titre", style = MaterialTheme.typography.headlineMedium) },
                 modifier = Modifier.fillMaxWidth(),
+                textStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
-                ),
-                textStyle = MaterialTheme.typography.headlineSmall
+                )
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             TextField(
                 value = content,
                 onValueChange = { content = it },
-                placeholder = { Text("Contenu") },
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
+                placeholder = { Text("Commencez à écrire...", style = MaterialTheme.typography.bodyLarge) },
+                modifier = Modifier.fillMaxSize(),
+                textStyle = MaterialTheme.typography.bodyLarge.copy(lineHeight = 24.sp),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,

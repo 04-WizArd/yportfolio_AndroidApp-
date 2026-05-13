@@ -1,5 +1,6 @@
 package com.example.yportfolio.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.yportfolio.model.Note
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,17 +28,32 @@ fun NoteCard(note: Note, onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(note.color)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            .padding(6.dp),
+        shape = RoundedCornerShape(20.dp), // Coins plus ronds
+        colors = CardDefaults.cardColors(
+            containerColor = if (note.color == 0xFFFFFFFF) MaterialTheme.colorScheme.surface else Color(note.color)
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)) // Bordure fine
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(20.dp)) {
             if (note.title.isNotEmpty()) {
-                Text(note.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    text = note.title,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
                 Spacer(Modifier.height(8.dp))
             }
-            Text(note.content, style = MaterialTheme.typography.bodyMedium, maxLines = 10, overflow = TextOverflow.Ellipsis)
+            Text(
+                text = note.content,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 8,
+                overflow = TextOverflow.Ellipsis,
+                lineHeight = 20.sp // Meilleure lisibilité
+            )
         }
     }
 }
