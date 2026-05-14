@@ -11,9 +11,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.yportfolio.R
 import com.example.yportfolio.viewmodel.NoteViewModel
 
 
@@ -38,7 +40,9 @@ fun NoteDetailScreen(noteId: Int?, viewModel: NoteViewModel, onBack: () -> Unit)
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (noteId == null) "Nouvelle note" else "Modifier") },
+                title = { Text(if (noteId == null) stringResource(R.string.nouvelle_note) else stringResource(
+                    R.string.modifier
+                )) },
                 navigationIcon = {
                     IconButton(onClick = {
                         if (title.isNotBlank() || content.isNotBlank()) {
@@ -52,7 +56,7 @@ fun NoteDetailScreen(noteId: Int?, viewModel: NoteViewModel, onBack: () -> Unit)
                         }
                         onBack()
                     }) {
-                        Icon(Icons.Default.ArrowBack, "Retour")
+                        Icon(Icons.Default.ArrowBack, stringResource(R.string.retour))
                     }
                 },
                 actions = {
@@ -61,7 +65,7 @@ fun NoteDetailScreen(noteId: Int?, viewModel: NoteViewModel, onBack: () -> Unit)
                             viewModel.deleteNote(noteId)
                             onBack()
                         }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Supprimer")
+                            Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.supprimer))
                         }
                     }
                 }
@@ -77,7 +81,7 @@ fun NoteDetailScreen(noteId: Int?, viewModel: NoteViewModel, onBack: () -> Unit)
             TextField(
                 value = title,
                 onValueChange = { title = it },
-                placeholder = { Text("Titre", style = MaterialTheme.typography.headlineMedium) },
+                placeholder = { Text(stringResource(R.string.titre), style = MaterialTheme.typography.headlineMedium) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 colors = TextFieldDefaults.colors(
@@ -91,7 +95,7 @@ fun NoteDetailScreen(noteId: Int?, viewModel: NoteViewModel, onBack: () -> Unit)
             TextField(
                 value = content,
                 onValueChange = { content = it },
-                placeholder = { Text("Commencez à écrire...", style = MaterialTheme.typography.bodyLarge) },
+                placeholder = { Text(stringResource(R.string.commencez_crire), style = MaterialTheme.typography.bodyLarge) },
                 modifier = Modifier.fillMaxSize(),
                 textStyle = MaterialTheme.typography.bodyLarge.copy(lineHeight = 24.sp),
                 colors = TextFieldDefaults.colors(

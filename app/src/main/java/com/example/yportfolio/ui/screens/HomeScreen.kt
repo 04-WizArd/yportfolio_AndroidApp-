@@ -18,17 +18,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.yportfolio.R
 import com.example.yportfolio.ui.components.ModernSearchBar
 import com.example.yportfolio.ui.components.NoteCard
 import com.example.yportfolio.viewmodel.NoteViewModel
 
+import androidx.compose.material.icons.filled.Settings
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: NoteViewModel, onNoteClick: (Int) -> Unit, onAddNoteClick: () -> Unit) {
+fun HomeScreen(
+    viewModel: NoteViewModel,
+    onNoteClick: (Int) -> Unit,
+    onAddNoteClick: () -> Unit,
+    onSettingsClick: () -> Unit
+) {
     val notes by viewModel.notes.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery
     val filteredNotes = notes.filter {
@@ -37,16 +46,33 @@ fun HomeScreen(viewModel: NoteViewModel, onNoteClick: (Int) -> Unit, onAddNoteCl
 
     Scaffold(
         topBar = {
-            // Un titre large et moderne en haut
-            Column(modifier = Modifier.padding(top = 100.dp)) {
-                Text(
-                    text = "Mes Notes",
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        letterSpacing = (-1).sp
-                    ),
-                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-                )
+            Column(
+                modifier = Modifier
+                    .statusBarsPadding()
+                    .padding(top = 8.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Mes Notes",
+                        style = MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = (-1).sp
+                        )
+                    )
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(R.string.settings),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
                 ModernSearchBar(searchQuery, viewModel::onSearchQueryChange)
             }
         },
@@ -58,24 +84,32 @@ fun HomeScreen(viewModel: NoteViewModel, onNoteClick: (Int) -> Unit, onAddNoteCl
                 shape = RoundedCornerShape(18.dp),
                 elevation = FloatingActionButtonDefaults.elevation(8.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Ajouter une note", modifier = Modifier.size(28.dp))
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.ajouter_une_note), modifier = Modifier.size(28.dp))
             }
         }
     ) { padding ->
-        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Box(modifier = Modifier
+            .padding(padding)
+            .fillMaxSize()) {
             if (filteredNotes.isEmpty()) {
                 // État vide élégant si aucune note n'est trouvée
-                EmptyState(searchQuery.isNotEmpty())
+                EmptyState(isSearching = searchQuery.isNotEmpty())
             } else {
                 LazyVerticalStaggeredGrid(
                     columns = StaggeredGridCells.Fixed(2),
-                    contentPadding = PaddingValues(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalItemSpacing = 8.dp,
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalItemSpacing = 16.dp,
                     modifier = Modifier.fillMaxSize()
                 ) {
+                    // Animation apparition et suppression des notes
                     items(filteredNotes, key = { it.id }) { note ->
-                        NoteCard(note) { onNoteClick(note.id) }
+                        Box(modifier = Modifier.animateItem()) { // Animation automatique de mouvement/suppression
+                            NoteCard(
+                                note = note,
+                                onClick = { onNoteClick(note.id) }
+                            )
+                        }
                     }
                 }
             }

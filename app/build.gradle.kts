@@ -64,4 +64,9 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.compose.animation:animation:1.7.8")
+    // Pour des icônes plus variées
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 }

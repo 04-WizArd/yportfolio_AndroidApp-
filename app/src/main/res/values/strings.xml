@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">yportfolio</string>
+    <string name="app_name">Y-Notes : Minimalist Diary</string>
+    <string name="ajouter_une_note">Ajouter une note</string>
+    <string name="nouvelle_note">Nouvelle note</string>
+    <string name="modifier">Modifier</string>
+    <string name="retour">Retour</string>
+    <string name="supprimer">Supprimer</string>
+    <string name="titre">Titre</string>
+    <string name="commencez_crire">Commencez à écrire...</string>
+    <string name="settings">Paramètres</string>
+    <string name="theme">Thème</string>
+    <string name="theme_light">Clair</string>
+    <string name="theme_dark">Sombre</string>
+    <string name="theme_system">Système</string>
 </resources>
