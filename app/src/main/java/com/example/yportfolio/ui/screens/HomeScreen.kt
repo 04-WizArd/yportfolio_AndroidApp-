@@ -1,5 +1,6 @@
 package com.example.yportfolio.ui.screens
 
+import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,17 +18,21 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.yportfolio.R
+import com.example.yportfolio.model.Note
 import com.example.yportfolio.ui.components.EmptyState
 import com.example.yportfolio.ui.components.ModernSearchBar
 import com.example.yportfolio.ui.components.NoteCard
 import com.example.yportfolio.viewmodel.NoteViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -41,11 +46,14 @@ fun HomeScreen(
 ) {
     val notes by viewModel.notes.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
     
     val filteredNotes = notes.filter {
         it.title.contains(searchQuery, true) || it.content.contains(searchQuery, true)
     }
-
+    //Espace titre et sous-titre
     val notesCount = notes.size
     val lastModifiedNote = notes.maxByOrNull { it.timestamp }
     val subtitle = remember(notesCount, lastModifiedNote) {
@@ -59,8 +67,20 @@ fun HomeScreen(
         }
     }
 
+    fun shareNote(note: Note) {
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, "${note.title}\n\n${note.content}")
+            type = "text/plain"
+        }
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        context.startActivity(shareIntent)
+    }
+
+    // Scaffold avec floatingActionButton
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             Column(
                 modifier = Modifier
@@ -134,18 +154,34 @@ fun HomeScreen(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
+                //disposition des cartes des notes sur l'ecran d'accueil
                 LazyVerticalStaggeredGrid(
                     columns = StaggeredGridCells.Fixed(2),
                     contentPadding = PaddingValues(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalItemSpacing = 10.dp,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalItemSpacing = 8.dp,
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(filteredNotes, key = { it.id }) { note ->
                         Box(modifier = Modifier.animateItem()) {
                             NoteCard(
                                 note = note,
-                                onClick = { onNoteClick(note.id) }
+                                onClick = { onNoteClick(note.id) },
+                                onPinClick = { viewModel.togglePin(note) },
+                                onShareClick = { shareNote(note) },
+                                onDeleteClick = {
+                                    viewModel.deleteNote(note)
+                                    scope.launch {
+                                        val result = snackbarHostState.showSnackbar(
+                                            message = "Note supprimée",
+                                            actionLabel = "ANNULER",
+                                            duration = SnackbarDuration.Short
+                                        )
+                                        if (result == SnackbarResult.ActionPerformed) {
+                                            viewModel.restoreNote(note)
+                                        }
+                                    }
+                                }
                             )
                         }
                     }

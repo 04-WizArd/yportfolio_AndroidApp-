@@ -9,12 +9,16 @@ import com.example.yportfolio.model.Note
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
 
     // On transforme le Flow du repository en StateFlow pour Compose
     val notes: StateFlow<List<Note>> = repository.allNotes
+        .map { list -> 
+            list.sortedWith(compareByDescending<Note> { it.isPinned }.thenByDescending { it.timestamp }) 
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _searchQuery = mutableStateOf("")
@@ -36,9 +40,19 @@ class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
         }
     }
 
-    fun deleteNote(noteId: Int) {
+    fun togglePin(note: Note) {
+        updateNote(note.copy(isPinned = !note.isPinned))
+    }
+
+    fun deleteNote(note: Note) {
         viewModelScope.launch {
-            repository.delete(noteId)
+            repository.delete(note.id)
+        }
+    }
+
+    fun restoreNote(note: Note) {
+        viewModelScope.launch {
+            repository.insert(note)
         }
     }
 

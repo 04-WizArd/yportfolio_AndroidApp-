@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.yportfolio.R
@@ -60,7 +61,7 @@ fun NoteDetailScreen(noteId: Int?, viewModel: NoteViewModel, onBack: () -> Unit)
                 actions = {
                     if (noteId != null) {
                         IconButton(onClick = {
-                            viewModel.deleteNote(noteId)
+                            existingNote?.let { viewModel.deleteNote(it) }
                             onBack()
                         }) {
                             Icon(
@@ -83,7 +84,7 @@ fun NoteDetailScreen(noteId: Int?, viewModel: NoteViewModel, onBack: () -> Unit)
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize()
-                .padding(horizontal = 24.dp)
+                .padding(start = 1.dp, end = 3.dp)
         ) {
             TextField(
                 value = title,
@@ -98,7 +99,10 @@ fun NoteDetailScreen(noteId: Int?, viewModel: NoteViewModel, onBack: () -> Unit)
                     ) 
                 },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
+                textStyle = MaterialTheme.typography.displaySmall.copy(
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Start
+                ),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
@@ -123,7 +127,10 @@ fun NoteDetailScreen(noteId: Int?, viewModel: NoteViewModel, onBack: () -> Unit)
                     ) 
                 },
                 modifier = Modifier.fillMaxSize(),
-                textStyle = MaterialTheme.typography.bodyLarge.copy(lineHeight = 28.sp),
+                textStyle = MaterialTheme.typography.bodyLarge.copy(
+                    lineHeight = 24.sp,
+                    textAlign = TextAlign.Start
+                ),
                 colors = TextFieldDefaults.colors(
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
